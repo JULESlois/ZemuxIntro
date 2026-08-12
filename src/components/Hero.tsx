@@ -20,7 +20,7 @@ function drawCodeLine(ctx: CanvasRenderingContext2D, line: number) {
     if (Math.random() < 0.14) s += " ";
     else s += glyphs[Math.floor(Math.random() * glyphs.length)];
   }
-  ctx.fillStyle = "#a4a49a";
+  ctx.fillStyle = "#8a8a82";
   ctx.font = `13px ${MONO}`;
   ctx.fillText(s, 30, 70 + line * 22);
 }
@@ -53,7 +53,7 @@ export default function Hero() {
     for (let i = 0; i < lines; i++) drawCodeLine(ctx, i);
 
     // prompt
-    ctx.fillStyle = "#0f0f0d";
+    ctx.fillStyle = "#e2e2dc";
     ctx.font = `600 13px ${MONO}`;
     ctx.fillText("zetermux $ neofetch --os android", 30, 70 + lines * 22);
 
@@ -63,17 +63,14 @@ export default function Hero() {
     const trail = () => {
       t++;
       // fading overlay
-      ctx.fillStyle = "rgba(250,250,247,0.14)";
+      ctx.fillStyle = "rgba(12,12,10,0.16)";
       ctx.fillRect(0, 36, w, h - 72);
 
       // re-stamp persistent base lines occasionally to keep them stable
       if (t % 24 === 0) {
-        ctx.fillStyle = "rgba(250,250,247,1)";
-        // redraw one base line to counteract fade
         const idx = Math.floor(Math.random() * lines);
-        ctx.save();
+        ctx.fillStyle = "#0c0c0a";
         ctx.clearRect(24, 60 + idx * 22, w - 48, 20);
-        ctx.restore();
         drawCodeLine(ctx, idx);
       }
 
@@ -91,8 +88,8 @@ export default function Hero() {
       for (const c of cells) {
         c.life -= 1 / keptTime;
         if (c.life <= 0) continue;
-        const a = c.life * 0.5;
-        ctx.fillStyle = `rgba(200,49,36,${a.toFixed(3)})`;
+        const a = c.life * 0.6;
+        ctx.fillStyle = `rgba(255,90,60,${a.toFixed(3)})`;
         ctx.fillText(c.char, 30 + c.col * 9, 52 + c.row * 22);
       }
       cells = cells.filter((c) => c.life > 0);
@@ -111,7 +108,7 @@ export default function Hero() {
   return (
     <section className="hero" ref={ref}>
       <div className="hero-inner">
-        <div className="copy reveal-group">
+        <div className="copy">
           <div className="kicker">
             <span className="kicker-dot" />
             ZETERMUX — ANDROID TERMINAL
@@ -128,38 +125,40 @@ export default function Hero() {
           </p>
           <div className="hero-cta">
             <a className="btn-solid" href="#download">
-              Download ZeTermux
+              Get ZeTermux
             </a>
-            <a className="btn" href="#github">
+            <a
+              className="btn"
+              href="https://github.com/JULESlois/ZeTermux"
+              target="_blank"
+              rel="noreferrer"
+            >
               View on GitHub
             </a>
           </div>
           <div className="hero-meta">
-            <span>v0.4.2</span>
-            <span>arm64-v8a</span>
-            <span>Open source — Apache 2.0</span>
+            <span>Android terminal</span>
+            <span>Open source</span>
+            <span>GPLv3</span>
           </div>
         </div>
 
-        <div className="hero-demo">
-          <div className="demo-chrome">
-            <span className="dot red" />
-            <span className="dot" />
-            <span className="dot" />
-            <span className="demo-title">zetermux — tmux attach</span>
-            <span className="live-tag">live canvas</span>
+        <div className="hero-term">
+          <div className="hero-term-head">
+            <span>ZETERMUX / SESSION 01</span>
+            <span className="live">Android / arm64</span>
           </div>
           <div className="hero-canvas-wrap">
             <canvas ref={canvasRef} />
           </div>
-          <div className="demo-bar">
-            <span>ESC</span>
-            <span>CTRL</span>
-            <span>ALT</span>
-            <span>TAB</span>
-            <span>←</span>
-            <span>→</span>
-            <span style={{ marginLeft: "auto" }}>80×24</span>
+          <div className="hero-term-bar">
+            <span className="key">CTRL</span>
+            <span className="key">ALT</span>
+            <span className="key">ESC</span>
+            <span className="key">TAB</span>
+            <span className="key">←</span>
+            <span className="key">→</span>
+            <span className="spacer">80×24</span>
           </div>
         </div>
       </div>

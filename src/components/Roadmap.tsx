@@ -1,71 +1,88 @@
-import Section from "./Section";
+import Section, { Head } from "./Section";
 
 const PHASES = [
   {
     name: "FOUNDATION",
-    status: "done",
+    state: "shipped",
+    bar: "████",
     items: [
-      ["Termux-based architecture", "done"],
-      ["UI cleanup & relayout", "done"],
-      ["Modern build toolchain", "done"],
+      ["architecture", "released"],
+      ["UI cleanup", "released"],
+      ["build toolchain", "released"],
     ],
   },
   {
     name: "INTERACTION",
-    status: "active",
+    state: "active",
+    bar: "██░░",
     items: [
-      ["Touch control system", "active"],
-      ["Gesture redesign", "active"],
-      ["Keyboard / IME integration", "active"],
+      ["touch controls", "in dev"],
+      ["gestures", "in dev"],
+      ["IME", "in dev"],
     ],
   },
   {
     name: "IMMERSION",
-    status: "next",
+    state: "next",
+    bar: "█░░░",
     items: [
-      ["True fullscreen workspace", "done"],
-      ["UI customization", "next"],
+      ["true fullscreen workspace", "in dev"],
+      ["UI customization", "planned"],
     ],
   },
   {
     name: "GRAPHICS",
-    status: "future",
+    state: "research",
+    bar: "░░░░",
     items: [
-      ["Sixel rendering", "exp"],
-      ["Kitty graphics protocol", "future"],
+      ["sixel rendering", "experimental"],
+      ["kitty protocol", "research"],
     ],
   },
 ];
 
 export default function Roadmap() {
   return (
-    <Section
-      id="roadmap"
-      num="07"
-      label="ROADMAP"
-      title="Where the project is going."
-      lead="Big directions only. Issues, PRs and dates live on GitHub; the site shows intent."
-    >
-      <div className="rm-grid" style={{ marginTop: 44 }}>
-        {PHASES.map((p) => (
-          <div key={p.name} className={`rm-phase ${p.status}`}>
-            <span className="rm-dot" />
-            <h3>{p.name}</h3>
-            {p.items.map(([label, st]) => (
-              <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                <span style={{ fontSize: 13, color: "var(--dim)" }}>{label}</span>
-                <span className={`badge ${st}`}>
-                  {st === "done" ? "released" : st === "active" ? "in dev" : st === "exp" ? "experimental" : "future"}
-                </span>
-              </div>
-            ))}
+    <Section id="roadmap">
+      <div className="wrap">
+        <Head
+          label="ROADMAP"
+          title="Where the project is going."
+          lead="Big directions only. Issues, PRs and dates live on GitHub; the site shows intent."
+        />
+        <div className="ledger" style={{ marginTop: 44 }}>
+          <div className="ledger-head">
+            <span>STATUS</span>
+            <span className="g">SYSTEM</span>
+            <span>STATE</span>
           </div>
-        ))}
+          {PHASES.map((p) => (
+            <div key={p.name} className="ledger-phase">
+              <div className="ledger-row">
+                <span className="ledger-bar">{p.bar}</span>
+                <span className="ledger-name">{p.name}</span>
+                <span className={`ledger-state ${p.state}`}>{p.state}</span>
+              </div>
+              <div className="ledger-items">
+                {p.items.map(([label, st], i) => (
+                  <div key={label} className="ledger-item">
+                    <span>
+                      <span className="tree">{i === p.items.length - 1 ? "└─" : "├─"}</span>
+                      {label}
+                    </span>
+                    <span>{st}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="sec-lead" style={{ marginTop: 28, fontSize: 15 }}>
+          Status markers stay honest: shipped, in development, experimental,
+          research. Nothing here is a promise — the direction will change as the
+          codebase proves out.
+        </p>
       </div>
-      <p className="sec-lead" style={{ marginTop: 26, fontSize: 15 }}>
-        Status markers stay honest: released, in development, experimental, research.
-        Nothing here is a promise — the direction will change as the codebase proves out.
-      </p>
     </Section>
   );
 }

@@ -1,39 +1,38 @@
 import type { ReactNode } from "react";
 import { useReveal } from "../hooks";
 
-interface Props {
+interface SectionProps {
   id?: string;
+  bleed?: boolean;
+  children?: ReactNode;
+}
+
+export default function Section({ id, bleed, children }: SectionProps) {
+  const ref = useReveal<HTMLElement>();
+  return (
+    <section id={id} ref={ref} className={bleed ? "section-bleed" : "section"}>
+      {children}
+    </section>
+  );
+}
+
+interface HeadProps {
   num?: string;
   label?: string;
   title?: string;
   lead?: string;
-  children?: ReactNode;
-  tone?: "dark" | "light" | "warm";
 }
 
-export default function Section({ id, num, label, title, lead, children, tone }: Props) {
-  const ref = useReveal<HTMLElement>();
-  const cls = ["section", tone === "dark" ? "section-dark" : "", tone === "warm" ? "" : ""]
-    .filter(Boolean)
-    .join(" ");
+export function Head({ num, label, title, lead }: HeadProps) {
   return (
-    <section id={id} className={cls} ref={ref}>
-      <div className="wrap">
-        {(num || title) && (
-          <div className="sec-head reveal-group">
-            {num && <div className="sec-num">{num}</div>}
-            {label && (
-              <div className="sec-label">
-                <span className="kicker-dot" />
-                {label}
-              </div>
-            )}
-            {title && <h2>{title}</h2>}
-            {lead && <p className="sec-lead">{lead}</p>}
-          </div>
-        )}
-        {children}
+    <div className="sec-head">
+      <div className="sec-meta">
+        <span className="kicker-dot" />
+        {num && <span className="sec-num">{num}</span>}
+        {label && <span>{label}</span>}
       </div>
-    </section>
+      {title && <h2 className="sec-title">{title}</h2>}
+      {lead && <p className="sec-lead">{lead}</p>}
+    </div>
   );
 }

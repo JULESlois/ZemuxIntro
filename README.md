@@ -1,32 +1,37 @@
-# React + TypeScript + Vite
+# ZeTermux Intro
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The website for [ZeTermux](https://github.com/JULESlois/ZeTermux) — a Termux-based
+terminal environment rebuilt around touch interaction and modern mobile UX.
 
-Currently, two official plugins are available:
+This repo contains the static intro site (Phase 2 — anti-template visual
+consolidation). It is not the terminal itself; the terminal lives in the
+`JULESlois/ZeTermux` repository.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- React + TypeScript + Vite
+- No UI framework — hand-rolled stylesheet only
+- JetBrains Mono for system/code metadata, Inter for display and body text
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Develop
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev       # start the dev server
+npm run build     # type-check + production build
+npm run lint      # oxlint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Design rules
+
+1. No generic bento grids.
+2. No pill-shaped tags or badges.
+3. Default border-radius = 0.
+4. Use borders / rules / spacing instead of containers.
+5. Every major section uses a different composition.
+6. JetBrains Mono is for system/code metadata, not all prose.
+7. Canvas / terminal visuals may break out of the content grid.
+8. Never imitate desktop window chrome on an Android-first product.
+
+If removing a card does not make the information harder to understand, remove
+the card.

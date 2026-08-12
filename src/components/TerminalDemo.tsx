@@ -48,7 +48,7 @@ function respond(cmd: string): Line[] {
       ];
     case "github":
       return [
-        { text: "  repo         github.com/zetermux/zetermux" },
+        { text: "  repo         github.com/JULESlois/ZeTermux" },
         { text: "  issues       report bugs & requests" },
         { text: "  discussions  design conversations" },
         { text: "  contributing build it. break it. improve it.", tone: "dim" },
@@ -72,7 +72,7 @@ function respond(cmd: string): Line[] {
 
 export default function TerminalDemo() {
   const [lines, setLines] = useState<Line[]>([
-    { text: "ZeTermux 0.4.2 — interactive preview", tone: "dim" },
+    { text: "ZeTermux — interactive preview · development build", tone: "dim" },
     { text: "Termux environment · touch-first shell", tone: "dim" },
     { text: "type `help` and press enter", tone: "accent" },
   ]);
