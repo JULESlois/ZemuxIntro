@@ -1,29 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useReveal } from "../hooks";
+import { GithubIcon } from "./icons";
 
 const MONO = '"JetBrains Mono", monospace';
-
-interface Cell {
-  col: number;
-  row: number;
-  life: number;
-  char: string;
-}
-
-const TRAIL_CHARS = "▒░#@$%&*+=~^:01".split("");
-
-function drawCodeLine(ctx: CanvasRenderingContext2D, line: number) {
-  const glyphs = "abcdefghijkmnpqrstuvwxyz0123456789_{}();=>:";
-  const len = 8 + Math.floor(Math.random() * 28);
-  let s = Math.random() > 0.5 ? "$ " : "  ";
-  for (let i = 0; i < len; i++) {
-    if (Math.random() < 0.14) s += " ";
-    else s += glyphs[Math.floor(Math.random() * glyphs.length)];
-  }
-  ctx.fillStyle = "#8a8a82";
-  ctx.font = `13px ${MONO}`;
-  ctx.fillText(s, 30, 70 + line * 22);
-}
 
 export default function Hero() {
   const ref = useReveal<HTMLElement>();
@@ -38,64 +17,92 @@ export default function Hero() {
     const parent = canvas.parentElement!;
     let w = parent.clientWidth;
     let h = parent.clientHeight;
+
     const resize = () => {
       w = parent.clientWidth;
       h = parent.clientHeight;
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.font = `13px ${MONO}`;
     };
     resize();
 
-    // static content
-    const lines = 16;
-    for (let i = 0; i < lines; i++) drawCodeLine(ctx, i);
+    const PAD = 26;
+    const logo = ["▄▄▄▄▄▄▄▄▄▄▄▄▄", "█ ZETERMUX █", "▀▀▀▀▀▀▀▀▀▀▀▀▀"];
+    const info: Array<[string, string]> = [
+      ["zetermux@android", ""],
+      ["──────────────", ""],
+      ["OS", "Android"],
+      ["Host", "arm64"],
+      ["Shell", "bash"],
+      ["Terminal", "ZeTermux"],
+    ];
 
-    // prompt
-    ctx.fillStyle = "#e2e2dc";
-    ctx.font = `600 13px ${MONO}`;
-    ctx.fillText("zetermux $ neofetch --os android", 30, 70 + lines * 22);
-
-    let cells: Cell[] = [];
     let raf = 0;
-    let t = 0;
-    const trail = () => {
-      t++;
-      // fading overlay
-      ctx.fillStyle = "rgba(12,12,10,0.16)";
-      ctx.fillRect(0, 36, w, h - 72);
+    let last = 0;
+    let on = true;
 
-      // re-stamp persistent base lines occasionally to keep them stable
-      if (t % 24 === 0) {
-        const idx = Math.floor(Math.random() * lines);
-        ctx.fillStyle = "#0c0c0a";
-        ctx.clearRect(24, 60 + idx * 22, w - 48, 20);
-        drawCodeLine(ctx, idx);
-      }
+    const render = () => {
+      ctx.clearRect(0, 0, w, h);
+      ctx.font = `13px ${MONO}`;
+      ctx.textBaseline = "top";
 
-      // spawn walker cells
-      if (t % 2 === 0) {
-        cells.push({
-          col: 8 + Math.floor(Math.random() * (w - 60) / 9),
-          row: 1 + Math.floor(Math.random() * (h - 100) / 22),
-          life: 1,
-          char: TRAIL_CHARS[Math.floor(Math.random() * TRAIL_CHARS.length)],
-        });
-      }
-      const keptTime = 260;
+      // command line
+      ctx.fillStyle = "#6d6d66";
+      ctx.fillText("zetermux", PAD, 20);
+      const w1 = ctx.measureText("zetermux ").width;
+      ctx.fillStyle = "#ff5a3c";
+      ctx.fillText("$ ", PAD + w1, 20);
+      ctx.fillStyle = "#e2e2dc";
+      ctx.fillText("neofetch", PAD + w1 + ctx.measureText("$ ").width, 20);
+
+      // logo (left, red)
       ctx.font = `600 13px ${MONO}`;
-      for (const c of cells) {
-        c.life -= 1 / keptTime;
-        if (c.life <= 0) continue;
-        const a = c.life * 0.6;
-        ctx.fillStyle = `rgba(255,90,60,${a.toFixed(3)})`;
-        ctx.fillText(c.char, 30 + c.col * 9, 52 + c.row * 22);
+      ctx.fillStyle = "#c83124";
+      let y = 60;
+      for (const l of logo) {
+        ctx.fillText(l, PAD, y);
+        y += 21;
       }
-      cells = cells.filter((c) => c.life > 0);
-      raf = requestAnimationFrame(trail);
+
+      // info (right, dim label + light value)
+      ctx.font = `13px ${MONO}`;
+      const ix = PAD + 150;
+      y = 60;
+      for (const [k, v] of info) {
+        if (v === "") {
+          ctx.fillStyle = "#8a8a82";
+          ctx.fillText(k, ix, y);
+        } else {
+          ctx.fillStyle = "#6d6d66";
+          ctx.fillText(k, ix, y);
+          ctx.fillStyle = "#e2e2dc";
+          ctx.fillText(v, ix + ctx.measureText(k + "  ").width, y);
+        }
+        y += 21;
+      }
+
+      // prompt with block cursor
+      const py = h - 34;
+      ctx.fillStyle = "#6d6d66";
+      ctx.fillText("zetermux", PAD, py);
+      const pw = ctx.measureText("zetermux ").width;
+      ctx.fillStyle = "#ff5a3c";
+      ctx.fillText("$", PAD + pw, py);
+      if (on) {
+        ctx.fillRect(PAD + pw + ctx.measureText("$ ").width, py + 2, 9, 15);
+      }
     };
-    raf = requestAnimationFrame(trail);
+
+    const loop = (ts: number) => {
+      if (ts - last > 520) {
+        on = !on;
+        last = ts;
+      }
+      render();
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
 
     const ro = new ResizeObserver(resize);
     ro.observe(parent);
@@ -109,10 +116,6 @@ export default function Hero() {
     <section className="hero" ref={ref}>
       <div className="hero-inner">
         <div className="copy">
-          <div className="kicker">
-            <span className="kicker-dot" />
-            ZETERMUX — ANDROID TERMINAL
-          </div>
           <h1 className="hero-title">
             A terminal built
             <br />
@@ -133,7 +136,8 @@ export default function Hero() {
               target="_blank"
               rel="noreferrer"
             >
-              View on GitHub
+              <GithubIcon />
+              GitHub
             </a>
           </div>
           <div className="hero-meta">
@@ -162,7 +166,6 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <div className="hero-rule" />
     </section>
   );
 }

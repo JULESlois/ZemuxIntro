@@ -46,7 +46,6 @@ export default function Roadmap() {
     <Section id="roadmap">
       <div className="wrap">
         <Head
-          label="ROADMAP"
           title="Where the project is going."
           lead="Big directions only. Issues, PRs and dates live on GitHub; the site shows intent."
         />

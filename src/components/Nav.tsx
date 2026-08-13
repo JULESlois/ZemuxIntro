@@ -1,4 +1,5 @@
 import { useScrollProgress } from "../hooks";
+import { GithubIcon } from "./icons";
 
 const REPO = "https://github.com/JULESlois/ZeTermux";
 
@@ -20,8 +21,14 @@ export default function Nav() {
           <a href="#roadmap">Roadmap</a>
           <a href="#docs">Docs</a>
         </div>
-        <a className="nav-gh" href={REPO} target="_blank" rel="noreferrer">
-          GitHub ↗
+        <a
+          className="nav-gh"
+          href={REPO}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="GitHub"
+        >
+          <GithubIcon />
         </a>
       </nav>
     </header>

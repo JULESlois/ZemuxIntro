@@ -1,5 +1,17 @@
 import { useEffect, useRef } from "react";
 
+const MONO = '"JetBrains Mono", monospace';
+
+const TERM_LINES: Array<{ text: string; dim?: boolean }> = [
+  { text: "$ ssh pi@camera.local" },
+  { text: "Welcome to Raspberry Pi OS", dim: true },
+  { text: "$ tail -f /var/log/motion.log" },
+  { text: "motion: frame 20481 — 12:41:07" },
+  { text: "motion: frame 20482 — 12:41:08" },
+  { text: "⟨ ctrl-c pressed via control bar ⟩", dim: true },
+  { text: "$ exit" },
+];
+
 export default function ImmersiveCanvas() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -24,86 +36,95 @@ export default function ImmersiveCanvas() {
 
     let raf = 0;
     let t = 0;
-    const glyphRows = 24;
-    const glyphCols = 44;
-    const noise: number[] = [];
-    for (let i = 0; i < glyphCols * glyphRows; i++) noise.push(Math.random());
 
-    const chars = "01#@$%&*+=~^{}[]();.:";
     const draw = () => {
       t += 0.012;
       const loop = (Math.sin(t * 0.55) + 1) / 2; // 0..1
-      const split = loop; // 0 = immersive, 1 = normal android chrome
+      const split = loop; // 0 = immersive, 1 = stock android chrome
 
       ctx.clearRect(0, 0, w, h);
 
-      // Phone body
-      const padX = 10;
-      ctx.fillStyle = "#12120f";
-      ctx.fillRect(padX, 8, w - padX * 2, h - 16);
+      // centered phone geometry, aspect ratio ~0.5
+      const maxH = h - 48;
+      const maxW = w - 48;
+      const phW = Math.min(maxW, 360, maxH * 0.5);
+      const phH = phW * 2;
+      const phX = (w - phW) / 2;
+      const phY = (h - phH) / 2;
 
-      // compute chrome sizes driven by split
-      const topBar = 22 * split;
-      const botBar = 26 * split;
-      const termTop = 8 + topBar;
-      const termH = h - 16 - topBar - botBar;
+      // phone body
+      ctx.fillStyle = "#12120f";
+      roundRect(ctx, phX, phY, phW, phH, 18);
+      ctx.fill();
+
+      const inset = 6;
+      const sx = phX + inset;
+      const sy = phY + inset;
+      const sw = phW - inset * 2;
+      const sh = phH - inset * 2;
+
+      // chrome sizes driven by split
+      const topBar = 26 * split;
+      const botBar = 30 * split;
+      const termTop = sy + topBar;
+      const termH = sh - topBar - botBar;
 
       // status / nav bars (Android chrome)
       if (split > 0.02) {
         ctx.fillStyle = "rgba(250,250,247,0.05)";
-        ctx.fillRect(padX, 8, w - padX * 2, topBar);
-        ctx.fillRect(padX, 8 + topBar + termH, w - padX * 2, botBar);
+        ctx.fillRect(sx, sy, sw, topBar);
+        ctx.fillRect(sx, sy + topBar + termH, sw, botBar);
         // clock
         ctx.fillStyle = "rgba(164,164,154,0.9)";
-        ctx.font = `600 10px "JetBrains Mono", monospace`;
-        ctx.fillText("09:41", padX + 10, 20);
+        ctx.font = `600 9px ${MONO}`;
+        ctx.fillText("09:41", sx + 8, sy + 16);
         ctx.textAlign = "right";
-        ctx.fillText("▂▄▆ 5G 🔋", w - padX - 10, 20);
+        ctx.fillText("▂▄▆ 5G", sx + sw - 8, sy + 16);
         ctx.textAlign = "left";
         // gesture pill
-        const pillW = 90;
+        const pillW = Math.min(90, sw * 0.3);
         ctx.fillStyle = "rgba(250,250,247,0.25)";
-        roundRect(ctx, w / 2 - pillW / 2, 8 + topBar + termH + 9, pillW, 4, 2);
+        roundRect(ctx, sx + sw / 2 - pillW / 2, sy + topBar + termH + 10, pillW, 4, 2);
         ctx.fill();
       }
 
       // terminal region
       ctx.save();
       ctx.beginPath();
-      ctx.rect(padX + 2, termTop, w - padX * 2 - 4, termH);
+      ctx.rect(sx, termTop, sw, termH);
       ctx.clip();
-
       ctx.fillStyle = "#0c0c0a";
-      ctx.fillRect(padX + 2, termTop, w - padX * 2 - 4, termH);
+      ctx.fillRect(sx, termTop, sw, termH);
 
-      const cellW = (w - padX * 2) / glyphCols;
-      const cellH = termH / glyphRows;
-      ctx.font = `${Math.max(9, cellH * 0.72)}px "JetBrains Mono", monospace`;
-      for (let r = 0; r < glyphRows; r++) {
-        for (let c = 0; c < glyphCols; c++) {
-          const n = noise[r * glyphCols + c];
-          const pulse = Math.sin(t * 2 + r * 0.6 + c * 0.25) * 0.5 + 0.5;
-          const v = n * pulse;
-          if (v < 0.35) continue;
-          const accent = (r === 3 && c < 12 && pulse > 0.6) || noise[(r * 7 + c) % 10] < 0.04;
-          ctx.fillStyle = accent
-            ? `rgba(255,90,60,${0.25 + pulse * 0.5})`
-            : `rgba(226,226,220,${0.06 + pulse * 0.22})`;
-          const ch = chars[(r * glyphCols + c + Math.floor(t * 6)) % chars.length];
-          ctx.fillText(ch, padX + 4 + c * cellW, termTop + (r + 0.82) * cellH);
+      // clean terminal content
+      const lh = Math.max(14, termH / 20);
+      const fs = Math.max(10, Math.min(12, sw / 26));
+      ctx.font = `${fs}px ${MONO}`;
+      ctx.textBaseline = "top";
+      let ty = termTop + 12;
+      for (const l of TERM_LINES) {
+        ctx.fillStyle = l.dim ? "#6d6d66" : "#e2e2dc";
+        const label = l.text.startsWith("$ ");
+        if (label) {
+          ctx.fillStyle = "#ff5a3c";
+          ctx.fillText("$ ", sx + 10, ty);
+          ctx.fillStyle = l.dim ? "#6d6d66" : "#e2e2dc";
+          ctx.fillText(l.text.slice(2), sx + 10 + ctx.measureText("$ ").width, ty);
+        } else {
+          ctx.fillText(l.text, sx + 10, ty);
         }
+        ty += lh;
       }
 
-      // scanline up the terminal
-      const sweep = ((t * 90) % (termH + 120)) - 60 - 30;
-      const sy = termTop + sweep;
-      ctx.fillStyle = "rgba(200,49,36,0.10)";
-      ctx.fillRect(padX + 2, sy, w - padX * 2 - 4, 24);
+      // subtle scanline
+      const sweep = ((t * 60) % termH);
+      ctx.fillStyle = "rgba(200,49,36,0.06)";
+      ctx.fillRect(sx, termTop + sweep, sw, 2);
       ctx.restore();
 
       // labels around the canvas
       ctx.fillStyle = "#6d6d66";
-      ctx.font = `11px "JetBrains Mono", monospace`;
+      ctx.font = `11px ${MONO}`;
       ctx.fillText(
         split > 0.5 ? "STOCK ANDROID LAYOUT" : "ZETERMUX IMMERSIVE MODE",
         12,

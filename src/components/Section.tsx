@@ -17,20 +17,13 @@ export default function Section({ id, bleed, children }: SectionProps) {
 }
 
 interface HeadProps {
-  num?: string;
-  label?: string;
   title?: string;
   lead?: string;
 }
 
-export function Head({ num, label, title, lead }: HeadProps) {
+export function Head({ title, lead }: HeadProps) {
   return (
     <div className="sec-head">
-      <div className="sec-meta">
-        <span className="kicker-dot" />
-        {num && <span className="sec-num">{num}</span>}
-        {label && <span>{label}</span>}
-      </div>
       {title && <h2 className="sec-title">{title}</h2>}
       {lead && <p className="sec-lead">{lead}</p>}
     </div>

@@ -6,9 +6,10 @@ import TouchDemo from "./components/TouchDemo";
 import ImmersiveCanvas from "./components/ImmersiveCanvas";
 import GraphicsCanvas from "./components/GraphicsCanvas";
 import CompatCanvas from "./components/CompatCanvas";
-import TerminalDemo from "./components/TerminalDemo";
+import CanvasTerminal from "./components/CanvasTerminal";
 import Roadmap from "./components/Roadmap";
 import { PALETTES } from "./sixel";
+import { GithubIcon } from "./components/icons";
 
 const REPO = "https://github.com/JULESlois/ZeTermux";
 
@@ -23,7 +24,6 @@ export default function App() {
       <Section id="why">
         <div className="wrap">
           <Head
-            label="WHY ZETERMUX"
             title="Termux runs on Android. ZeTermux is built for it."
             lead="A fork's worth is the layer it adds. ZeTermux keeps the Termux ecosystem intact and rebuilds the interaction layer on top of it."
           />
@@ -65,8 +65,6 @@ export default function App() {
       <Section id="immersive" bleed>
         <div className="wrap bleed-head">
           <Head
-            num="02"
-            label="IMMERSIVE MODE"
             title="A workspace, not a window."
             lead="The canvas below alternates between stock Android chrome and ZeTermux's immersive mode. Same phone. Different philosophy."
           />
@@ -86,8 +84,6 @@ export default function App() {
       <Section id="keyboard">
         <div className="wrap">
           <Head
-            num="03"
-            label="KEYBOARD / IME"
             title="Android's input system, on the terminal's terms."
             lead="ZeTermux cooperates with the platform instead of forcing a desktop keyboard model onto a phone."
           />
@@ -116,8 +112,6 @@ export default function App() {
       <Section id="graphics" bleed>
         <div className="wrap bleed-head">
           <Head
-            num="04"
-            label="TERMINAL GRAPHICS"
             title="Terminal ≠ text only."
             lead="A first-class escape-sequence pipeline so images, plots and previews can live beside your prompt."
           />
@@ -150,8 +144,6 @@ export default function App() {
       <Section id="compat" bleed>
         <div className="wrap bleed-head">
           <Head
-            num="05"
-            label="COMPATIBILITY"
             title="Built on the Termux ecosystem."
             lead="ZeTermux does not replace Termux. Every package you rely on streams through the same ecosystem — `pkg install git neovim clang` works the day you install."
           />
@@ -167,27 +159,14 @@ export default function App() {
       </Section>
 
       <Section id="demo" bleed>
-        <div className="wrap bleed-head">
-          <Head
-            num="06"
-            label="INTERACTIVE"
-            title="Try the shell."
-            lead="A live command parser running in your browser. Same tone the real app aims for — factual, fast, touchable."
-          />
-        </div>
         <div className="bleed-media">
-          <TerminalDemo />
-        </div>
-        <div className="wrap bleed-foot">
-          <p className="sec-lead" style={{ marginTop: 0 }}>
-            Type <span className="mono">help</span> to list commands.
-          </p>
+          <CanvasTerminal />
         </div>
       </Section>
 
       <Section id="philosophy">
         <div className="wrap">
-          <Head label="PHILOSOPHY" title="Terminal UX should evolve." />
+          <Head title="Terminal UX should evolve." />
           <div className="philo" style={{ marginTop: 44 }}>
             <div className="philo-item">
               <div className="philo-num">01</div>
@@ -249,7 +228,6 @@ export default function App() {
       <Section id="docs">
         <div className="wrap">
           <Head
-            label="DOCS"
             title="Documentation."
             lead="Guides for daily use and for building ZeTermux itself."
           />
@@ -273,7 +251,7 @@ export default function App() {
 
       <Section id="project">
         <div className="wrap">
-          <Head label="PROJECT" title="Origins." />
+          <Head title="Origins." />
           <div className="origins" style={{ marginTop: 40 }}>
             <p className="sec-lead" style={{ marginTop: 0 }}>
               ZeTermux began as an exploration of improving the Android terminal
@@ -300,7 +278,8 @@ export default function App() {
             </h2>
             <div className="footer-links">
               <a className="btn-solid" href={REPO} target="_blank" rel="noreferrer">
-                GitHub ↗
+                <GithubIcon />
+                GitHub
               </a>
               <a className="btn" href={`${REPO}/issues`} target="_blank" rel="noreferrer">
                 Issues

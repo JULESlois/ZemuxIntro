@@ -14,8 +14,6 @@ export default function TouchDemo() {
     <Section id="touch">
       <div className="wrap">
         <Head
-          num="01"
-          label="TOUCH-FIRST"
           title="Controls, visible and reachable."
           lead="Common terminal actions should not hide behind hardware buttons or gesture combinations. ZeTermux exposes them as a configurable on-screen layer."
         />
